@@ -56,7 +56,7 @@ func DeleteInstance(instance *v1alpha1.Instance) {
 	token := GetToken(instance)
 	// Setting Auth Header
 	newHeader := SettingAuthHeader(&http.Header{}, token)
-	urlGetInstance := "https://kr1-api-instance.infrastructure.cloud.toast.com/v2/" + instance.Spec.TenantId + "/servers/detail"
+	urlGetInstance := baseUrl + instance.Spec.TenantId + "/servers/detail"
 	newResponse, err := ListHandleFunc(urlGetInstance, *newHeader)
 	if err != nil {
 		fmt.Println(err)
@@ -86,4 +86,54 @@ func DeleteInstance(instance *v1alpha1.Instance) {
 		}
 		resp.Body.Close()
 	}
+}
+
+func ListInstance(instance *v1alpha1.Instance){
+	// Get Token
+	token := GetToken(instance)
+	// Setting Auth Header
+	newHeader := SettingAuthHeader(&http.Header{}, token)
+	urlGetInstance := baseUrl + instance.Spec.TenantId + "/servers/detail"
+	newResponse, err := ListHandleFunc(urlGetInstance, *newHeader)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//servers := &model.ServerInfo{}
+	newBytes, err := ioutil.ReadAll(newResponse.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer newResponse.Body.Close()
+	servers := &model.ServerInfo{}
+	err = json.Unmarshal(newBytes, servers)
+
+	diff := len(servers.Servers) - instance.Spec.Count
+	url := baseUrl + instance.Spec.TenantId + "/servers"
+
+	if diff < 0 {
+		diff *= -1
+		if diff == 1{
+			inst.Server.Name = instance.Spec.InstName+ fmt.Sprintf("-%d", diff + 1)
+		}else{
+			inst.Server.Name = instance.Spec.InstName
+		}
+		inst.Server.ImageRef = model.Images[instance.Spec.ImageRef]
+		inst.Server.FlavorRef = model.Flavors[instance.Spec.FlavorRef]
+		inst.Server.Networks = []model.Subnet{{instance.Spec.SubnetId}}
+		inst.Server.KeyName = instance.Spec.KeyName
+		inst.Server.MinCount = diff
+		inst.Server.BlockDeviceMappingV2 = []model.BlockDevice{{UUID: model.Images[instance.Spec.ImageRef], BootIndex: 0,
+			VolumeSize: instance.Spec.BlockSize, DeviceName: "vda", SourceType: "image", DestinationType: "volume", DeleteOnTermination: 1}}
+
+		resp, err := PostHandleFunc(url, inst, *newHeader)
+		if err != nil {
+			fmt.Println(err)
+		}
+		_, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer resp.Body.Close()
+	}
+
 }
