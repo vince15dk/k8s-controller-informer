@@ -25,7 +25,7 @@ func WatchResources(ctx context.Context, clientSet client_v1.InstanceV1Interface
 			},
 		},
 		&v1alpha1.Instance{},
-		10*time.Second,
+		3*time.Minute,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				fmt.Printf("instance has ben created\n")

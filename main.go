@@ -43,6 +43,7 @@ func main() {
 		if shutdown {
 			return
 		}
+		instance := item.(*v1alpha1.Instance)
 		defer queue.Forget(item)
 		key, err := cache.MetaNamespaceKeyFunc(item)
 		if err != nil {
@@ -51,21 +52,14 @@ func main() {
 		}
 		a,_,_ := store.GetByKey(key)
 		if a != nil{
-			ns, name, err := cache.SplitMetaNamespaceKey(key)
-			if err != nil {
-				fmt.Printf("splitting key into namespace and name %s\n", err.Error())
-				return
-			}
-			fmt.Println("creating object", ns, name)
+			CreateInstance(instance)
 		}else{
-			fmt.Println("no in the store")
-			ns, name, err := cache.SplitMetaNamespaceKey(key)
-			if err != nil {
-				fmt.Printf("splitting key into namespace and name %s\n", err.Error())
-				return
-			}
-			fmt.Println("Deleting object", ns, name)
+			//ns, name, err := cache.SplitMetaNamespaceKey(key)
+			//if err != nil {
+			//	fmt.Printf("splitting key into namespace and name %s\n", err.Error())
+			//	return
+			//}
+			DeleteInstance(instance)
 		}
-		//test,_ := instClientSet.Instances(ns).Get(ctx, name, metav1.GetOptions{})
 	}
 }
