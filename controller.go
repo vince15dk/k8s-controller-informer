@@ -36,7 +36,7 @@ func CreateInstance(instance *v1alpha1.Instance){
 	inst.Server.BlockDeviceMappingV2 = []model.BlockDevice{{UUID: model.Images[instance.Spec.ImageRef], BootIndex: 0,
 		VolumeSize: instance.Spec.BlockSize, DeviceName: "vda", SourceType: "image", DestinationType: "volume", DeleteOnTermination: 1}}
 
-	resp, err := CreatingPostHandleFunc(url, inst, *newHeader)
+	resp, err := PostHandleFunc(url, inst, *newHeader)
 	if err != nil {
 		fmt.Println(err)
 	}

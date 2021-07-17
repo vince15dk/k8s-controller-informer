@@ -42,13 +42,24 @@ func PostHandleFunc(url string, body interface{}, headers http.Header)(*http.Res
 	return client.Do(request)
 }
 
-func CreatingPostHandleFunc(url string, body interface{}, headers http.Header)(*http.Response, error){
-	jsonBytes, err := json.Marshal(body)
+
+func ListHandleFunc(url string, headers http.Header)(*http.Response, error){
+	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
-	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(jsonBytes))
 	request.Header = headers
 	client := http.Client{}
 	return client.Do(request)
 }
+
+func DeleteHandelFunc(url string, headers http.Header)(*http.Response, error){
+	request, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header = headers
+	client := http.Client{}
+	return client.Do(request)
+}
+
