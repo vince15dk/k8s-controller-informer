@@ -1,6 +1,6 @@
 package model
 
-var flavors = map[string]string{
+var Flavors = map[string]string{
 	"g2.v100.c32m360":"0dc63e3d-3e92-4164-9bfe-447dd60a5b5c",
 	"t2.c1m1":"13646526-0bb9-400b-929f-797fdb7547eb",
 	"g2.v100.c64m720":"261780ac-06b2-4a19-b5e9-2be78f2216b2",
@@ -35,7 +35,7 @@ var flavors = map[string]string{
 	"u2.c2m2":"f6e3a64b-5155-494b-8cd9-a6fe18fe8156",
 }
 
-var images = map[string]string{
+var Images = map[string]string{
 	"Ubuntu-20.04":"4b44cd0b-9074-46d8-8653-f46d7f00e6ac",
 	"Ubuntu-18.04":"3322dc87-1d1e-4185-b873-036d100940c0",
 	"Debian-9-Stretch":"1a4cc207-4174-4cfa-afed-ae14e2b4502d",

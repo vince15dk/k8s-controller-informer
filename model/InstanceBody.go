@@ -26,11 +26,12 @@ type ServerType struct {
 }
 
 type ServerTypeTest struct {
-	Name      string `json:"name"`
-	KeyName   string `json:"key_name"`
-	ImageRef  string `json:"imageRef"`
-	FlavorRef string `json:"flavorRef"`
-	Networks  []SubnetTest `json:"networks"`
+	Name                 string        `json:"name"`
+	KeyName              string        `json:"key_name"`
+	ImageRef             string        `json:"imageRef"`
+	FlavorRef            string        `json:"flavorRef"`
+	MinCount             int           `json:"min_count"`
+	Networks             []SubnetTest  `json:"networks"`
 	BlockDeviceMappingV2 []BlockDevice `json:"block_device_mapping_v2"`
 }
 
