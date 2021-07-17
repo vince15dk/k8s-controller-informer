@@ -25,13 +25,13 @@ type ServerType struct {
 	} `json:"security_groups"`
 }
 
-type ServerTypeTest struct {
+type Server struct {
 	Name                 string        `json:"name"`
 	KeyName              string        `json:"key_name"`
 	ImageRef             string        `json:"imageRef"`
 	FlavorRef            string        `json:"flavorRef"`
 	MinCount             int           `json:"min_count"`
-	Networks             []SubnetTest  `json:"networks"`
+	Networks             []Subnet  `json:"networks"`
 	BlockDeviceMappingV2 []BlockDevice `json:"block_device_mapping_v2"`
 }
 
@@ -45,10 +45,10 @@ type BlockDevice struct {
 	DeleteOnTermination int    `json:"delete_on_termination"`
 }
 
-type SubnetTest struct {
+type Subnet struct {
 	Subnet string `json:"subnet"`
 }
 
 type Instance struct {
-	Server ServerTypeTest `json:"server"`
+	Server Server `json:"server"`
 }

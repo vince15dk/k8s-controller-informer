@@ -26,11 +26,11 @@ func CreateInstance(instance *v1alpha1.Instance){
 
 	// Creating Instance
 	url := "https://kr1-api-instance.infrastructure.cloud.toast.com/v2/" + instance.Spec.TenantId + "/servers"
-
+		// Mutating Instance object
 	inst.Server.Name = instance.Spec.InstName
 	inst.Server.ImageRef = model.Images[instance.Spec.ImageRef]
 	inst.Server.FlavorRef = model.Flavors[instance.Spec.FlavorRef]
-	inst.Server.Networks = []model.SubnetTest{{instance.Spec.SubnetId}}
+	inst.Server.Networks = []model.Subnet{{instance.Spec.SubnetId}}
 	inst.Server.KeyName = instance.Spec.KeyName
 	inst.Server.MinCount = instance.Spec.Count
 	inst.Server.BlockDeviceMappingV2 = []model.BlockDevice{{UUID: model.Images[instance.Spec.ImageRef], BootIndex: 0,

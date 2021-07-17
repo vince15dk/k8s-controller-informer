@@ -46,6 +46,7 @@ func main() {
 		instance := item.(*v1alpha1.Instance)
 		defer queue.Forget(item)
 		key, err := cache.MetaNamespaceKeyFunc(item)
+		//ns, name, err := cache.SplitMetaNamespaceKey(key)
 		if err != nil {
 			fmt.Printf("getting key from cache %s\n", err.Error())
 			return
@@ -54,11 +55,6 @@ func main() {
 		if a != nil{
 			CreateInstance(instance)
 		}else{
-			//ns, name, err := cache.SplitMetaNamespaceKey(key)
-			//if err != nil {
-			//	fmt.Printf("splitting key into namespace and name %s\n", err.Error())
-			//	return
-			//}
 			DeleteInstance(instance)
 		}
 	}
