@@ -3,9 +3,9 @@ kind: Instance
 metadata:
   name: ubuntu-vm2
 spec:
-  tenantId: "12b2e9b9caac4247887fe8501492d6c0"
-  userName: "sukjoo.kim@nhn.com"
-  password: "nhn!@#123"
+  tenantId: ""
+  userName: ""
+  password: ""
   instName: "ubuntu-vm2"
   imageRef: "Ubuntu-18.04"
   flavorRef: "m2.c2m4"

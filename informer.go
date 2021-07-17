@@ -25,7 +25,7 @@ func WatchResources(ctx context.Context, clientSet client_v1.InstanceV1Interface
 			},
 		},
 		&v1alpha1.Instance{},
-		3*time.Minute,
+		10*time.Second,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
 				fmt.Printf("instance has ben created\n")
@@ -33,6 +33,10 @@ func WatchResources(ctx context.Context, clientSet client_v1.InstanceV1Interface
 			},
 			UpdateFunc: func(old, new interface{}) {
 				fmt.Printf("instance has been updates\n")
+				a := new.(*v1alpha1.Instance)
+				fmt.Println("new", a.Spec.InstName)
+				b := old.(*v1alpha1.Instance)
+				fmt.Println("old", b.Spec.InstName)
 			},
 			DeleteFunc: func(obj interface{}) {
 				fmt.Printf("instance has been deleted\n")

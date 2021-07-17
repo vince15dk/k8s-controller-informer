@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/vince15dk/k8s-controller-informer/api/types/v1alpha1"
 	"github.com/vince15dk/k8s-controller-informer/model"
@@ -10,23 +11,25 @@ import (
 
 var (
 	urlCreateRepo = "https://api-identity.infrastructure.cloud.toast.com/v2.0/tokens"
-	inst = &model.Instance{}
+	inst          = &model.Instance{}
+	baseUrl = "https://kr1-api-instance.infrastructure.cloud.toast.com/v2/"
 )
 
-func SettingAuthHeader(h *http.Header, token model.CreateAccessResponse)*http.Header{
+func SettingAuthHeader(h *http.Header, token model.CreateAccessResponse) *http.Header {
 	h.Set("Content-Type", "application/json")
 	h.Set("X-Auth-Token", token.Access.Token.ID)
 	return h
 }
 
-func CreateInstance(instance *v1alpha1.Instance){
+func CreateInstance(instance *v1alpha1.Instance) {
+	// Get Token
 	token := GetToken(instance)
 	// Setting Auth Header
 	newHeader := SettingAuthHeader(&http.Header{}, token)
 
 	// Creating Instance
-	url := "https://kr1-api-instance.infrastructure.cloud.toast.com/v2/" + instance.Spec.TenantId + "/servers"
-		// Mutating Instance object
+	url := baseUrl + instance.Spec.TenantId + "/servers"
+	// Mutating Instance object
 	inst.Server.Name = instance.Spec.InstName
 	inst.Server.ImageRef = model.Images[instance.Spec.ImageRef]
 	inst.Server.FlavorRef = model.Flavors[instance.Spec.FlavorRef]
@@ -40,14 +43,47 @@ func CreateInstance(instance *v1alpha1.Instance){
 	if err != nil {
 		fmt.Println(err)
 	}
-	bytes, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer resp.Body.Close()
-	fmt.Println(string(bytes))
+
 }
 
-func DeleteInstance(instance *v1alpha1.Instance){
-	fmt.Println("deleting instance", instance.Spec.ImageRef)
+func DeleteInstance(instance *v1alpha1.Instance) {
+	// Get Token
+	token := GetToken(instance)
+	// Setting Auth Header
+	newHeader := SettingAuthHeader(&http.Header{}, token)
+	urlGetInstance := "https://kr1-api-instance.infrastructure.cloud.toast.com/v2/" + instance.Spec.TenantId + "/servers/detail"
+	newResponse, err := ListHandleFunc(urlGetInstance, *newHeader)
+	if err != nil {
+		fmt.Println(err)
+	}
+	//servers := &model.ServerInfo{}
+	newBytes, err := ioutil.ReadAll(newResponse.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer newResponse.Body.Close()
+	servers := &model.ServerInfo{}
+	var serverIds []string
+	var num = 1
+	err = json.Unmarshal(newBytes, servers)
+	for _, v := range servers.Servers {
+		for i := num; i <= instance.Spec.Count; i++ {
+			if v.Name == fmt.Sprintf("%s-%d", instance.Spec.InstName, i) {
+				serverIds = append(serverIds, v.ID)
+			}
+		}
+	}
+	for _, v := range serverIds{
+		urlDeleteInstance := baseUrl + instance.Spec.TenantId + "/servers/" + v
+		resp, err := DeleteHandelFunc(urlDeleteInstance, *newHeader)
+		if err != nil {
+			fmt.Println(err)
+		}
+		resp.Body.Close()
+	}
 }
