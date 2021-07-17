@@ -44,6 +44,7 @@ func main() {
 			return
 		}
 		instance := item.(*v1alpha1.Instance)
+		c := &InstanceController{instance: instance}
 		defer queue.Forget(item)
 		key, err := cache.MetaNamespaceKeyFunc(item)
 		//ns, name, err := cache.SplitMetaNamespaceKey(key)
@@ -53,9 +54,9 @@ func main() {
 		}
 		a,_,_ := store.GetByKey(key)
 		if a != nil{
-			CreateInstance(instance)
+			c.CreateInstance()
 		}else{
-			DeleteInstance(instance)
+			c.DeleteInstance()
 		}
 	}
 }
