@@ -95,12 +95,12 @@ func (c *InstanceController)DeleteInstance() {
 	}
 }
 
-func ListInstance(instance *v1alpha1.Instance){
+func (c *InstanceController)ListInstance(){
 	// Get Token
-	token := GetToken(instance)
+	token := GetToken(c.instance)
 	// Setting Auth Header
 	newHeader := SettingAuthHeader(&http.Header{}, token)
-	urlGetInstance := baseUrl + instance.Spec.TenantId + "/servers/detail"
+	urlGetInstance := baseUrl + c.instance.Spec.TenantId + "/servers/detail"
 	newResponse, err := ListHandleFunc(urlGetInstance, *newHeader)
 	if err != nil {
 		fmt.Println(err)
@@ -114,16 +114,16 @@ func ListInstance(instance *v1alpha1.Instance){
 	servers := &model.ServerInfo{}
 	err = json.Unmarshal(newBytes, servers)
 
-	diff := len(servers.Servers) - instance.Spec.Count
-	url := baseUrl + instance.Spec.TenantId + "/servers"
+	diff := len(servers.Servers) - c.instance.Spec.Count
+	url := baseUrl + c.instance.Spec.TenantId + "/servers"
 
 	if diff < 0 {
-		AddBodyInstance(inst, instance)
+		AddBodyInstance(inst, c.instance)
 		diff *= -1
 		if diff == 1{
-			inst.Server.Name = instance.Spec.InstName+ fmt.Sprintf("-%d", diff + 1)
+			inst.Server.Name = c.instance.Spec.InstName+ fmt.Sprintf("-%d", diff + 1)
 		}else{
-			inst.Server.Name = instance.Spec.InstName
+			inst.Server.Name = c.instance.Spec.InstName
 		}
 		inst.Server.MinCount = diff
 		resp, err := PostHandleFunc(url, inst, *newHeader)

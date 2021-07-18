@@ -14,6 +14,8 @@ import (
 	"k8s.io/client-go/util/workqueue"
 )
 
+var state = "create"
+
 func main() {
 	kubeconfig := flag.String("kubeconfig", "/Users/nhn/.kube/config", "location to your kubeconfig file")
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
@@ -38,7 +40,6 @@ func main() {
 	for {
 		instancesFromStore := store.List()
 		fmt.Printf("instances in store: %d\n", len(instancesFromStore))
-
 		item, shutdown := queue.Get()
 		if shutdown {
 			return
@@ -53,10 +54,17 @@ func main() {
 			return
 		}
 		a,_,_ := store.GetByKey(key)
-		if a != nil{
+		if state == "check" && a != nil{
+			c.ListInstance()
+			queue.Done(item)
+		}else if state == "create" && a != nil{
 			c.CreateInstance()
-		}else{
+			queue.Done(item)
+		}else if state == "delete" && a == nil{
 			c.DeleteInstance()
+			queue.Done(item)
+		}else{
+			panic("you should never be here")
 		}
 	}
 }
