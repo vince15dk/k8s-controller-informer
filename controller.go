@@ -7,6 +7,7 @@ import (
 	"github.com/vince15dk/k8s-controller-informer/model"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -113,8 +114,14 @@ func (c *InstanceController)ListInstance(){
 	defer newResponse.Body.Close()
 	servers := &model.ServerInfo{}
 	err = json.Unmarshal(newBytes, servers)
+	var s []string
+	for _, v := range servers.Servers{
+		if strings.Split(v.Name, "-")[0] == c.instance.Spec.InstName{
+			s = append(s, strings.Split(v.Name, "-")[0])
+		}
+	}
 
-	diff := len(servers.Servers) - c.instance.Spec.Count
+	diff := len(s) - c.instance.Spec.Count
 	url := baseUrl + c.instance.Spec.TenantId + "/servers"
 
 	if diff < 0 {
