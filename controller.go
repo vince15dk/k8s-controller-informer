@@ -142,6 +142,23 @@ func (c *InstanceController)ListInstance(){
 			fmt.Println(err)
 		}
 		defer resp.Body.Close()
+	}else if diff > 0 {
+		var serverIds []string
+		for _, v := range servers.Servers{
+			if strings.Split(v.Name, "-")[0] == c.instance.Spec.InstName{
+				serverIds = append(serverIds, v.ID)
+			}
+		}
+		serverIds = serverIds[:diff]
+		fmt.Println(serverIds)
+		for _, v := range serverIds{
+			urlDeleteInstance := baseUrl + c.instance.Spec.TenantId + "/servers/" + v
+			resp, err := DeleteHandelFunc(urlDeleteInstance, *newHeader)
+			if err != nil {
+				fmt.Println(err)
+			}
+			resp.Body.Close()
+		}
 	}
 
 }
