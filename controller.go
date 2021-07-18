@@ -150,7 +150,6 @@ func (c *InstanceController)ListInstance(){
 			}
 		}
 		serverIds = serverIds[:diff]
-		fmt.Println(serverIds)
 		for _, v := range serverIds{
 			urlDeleteInstance := baseUrl + c.instance.Spec.TenantId + "/servers/" + v
 			resp, err := DeleteHandelFunc(urlDeleteInstance, *newHeader)
