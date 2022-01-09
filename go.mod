@@ -1,6 +1,6 @@
 module github.com/vince15dk/k8s-controller-informer
 
-go 1.14
+go 1.16
 
 require (
 	k8s.io/api v0.18.0
